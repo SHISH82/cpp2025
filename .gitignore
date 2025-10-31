@@ -1,0 +1,15 @@
+.DS_Store
+.idea/
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+*.o
+*.obj
+*.pdb
+*.dll
+*.dylib
+*.so
+plugins/*.dll
+plugins/*.dylib
+plugins/*.so
