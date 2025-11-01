@@ -1,14 +1,17 @@
+#include "calc/plugin_api.h"
 #include <cmath>
-#include "plugin_api.h"
+using namespace calc::plugin;
 
-namespace {
-    constexpr double kPi = 3.14159265358979323846;
-    double sin_deg(double d) { return std::sin(d * kPi / 180.0); }
+
+static double CALC_CALL f(double x_deg) {
+    constexpr long double PI = 3.141592653589793238462643383279502884L;
+    long double rad = (long double)x_deg * (PI / 180.0L);
+    return std::sin((double)rad);
 }
 
-CALC_PLUGIN_EXPORT bool calc_register(calc::plugin::FunctionDescriptor& out) {
-    out.abi_version = calc::plugin::kAbiVersion;
-    out.name = "sin";
-    out.invoke = &sin_deg;
+CALC_API bool CALC_CALL calc_register(FunctionDescriptor& d) {
+    d.abi_version = kAbiVersion;
+    d.name   = "sin";
+    d.invoke = &f;
     return true;
 }

@@ -1,17 +1,16 @@
+#include "calc/plugin_api.h"
 #include <cmath>
 #include <stdexcept>
-#include "plugin_api.h"
+using namespace calc::plugin;
 
-namespace {
-    double myln(double x) {
-        if (x <= 0.0) throw std::domain_error("ln: x <= 0");
-        return std::log(x);
-    }
+static double CALC_CALL f(double x) {
+    if (x <= 0) throw std::domain_error("ln: x <= 0");
+    return std::log(x);
 }
 
-CALC_PLUGIN_EXPORT bool calc_register(calc::plugin::FunctionDescriptor& out) {
-    out.abi_version = calc::plugin::kAbiVersion;
-    out.name = "ln";
-    out.invoke = &myln;
+CALC_API bool CALC_CALL calc_register(FunctionDescriptor& d) {
+    d.abi_version = kAbiVersion;
+    d.name   = "ln";
+    d.invoke = &f;
     return true;
 }
