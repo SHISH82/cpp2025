@@ -5,6 +5,11 @@
 #include <vector>
 #include <algorithm>
 
+#if defined(_WIN32)
+    #define NOMINMAX
+    #include <windows.h>
+#endif
+
 #include "calc/eval.hpp"
 #include "calc/plugins.hpp"
 
@@ -22,16 +27,37 @@ static const char* platform_ext() {
 
 int main(int argc, char* argv[]) {
     try {
+#if defined(_WIN32)
+        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);
+#endif
+
         calc::FunctionRegistry reg;
 
+#if defined(_DEBUG)
+        const char* cfg = "Debug";
+#else
+        const char* cfg = "Release";
+#endif
 
         std::vector<fs::path> dirs;
-        dirs.push_back(fs::current_path() / "plugins");
+
+        fs::path cwd = fs::current_path();
+        dirs.push_back(cwd / "plugins");
+        dirs.push_back(cwd / "plugins" / cfg);
+
         if (argc > 0 && argv && argv[0]) {
             try {
                 fs::path exe = fs::weakly_canonical(fs::path(argv[0]));
-                dirs.push_back(exe.parent_path() / "plugins");
-            } catch (...) {}
+                fs::path exe_dir = exe.parent_path();
+
+                dirs.push_back(exe_dir / "plugins");
+                dirs.push_back(exe_dir / "plugins" / cfg);
+
+                dirs.push_back(exe_dir.parent_path() / "plugins");
+                dirs.push_back(exe_dir.parent_path() / "plugins" / cfg);
+            } catch (...) {
+            }
         }
 
         for (auto& d : dirs) {
